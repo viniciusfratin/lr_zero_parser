@@ -3,18 +3,24 @@ INCLUDE_DIR = include
 OBJ_DIR = obj
 BIN_DIR = bin
 
-all: grammar list main link
+GRAMMAR_OBJ = $(OBJ_DIR)/grammar.o
+LIST_OBJ = $(OBJ_DIR)/list.o
+MAIN_OBJ = $(OBJ_DIR)/main.o
+PARSER_BIN = $(BIN_DIR)/lr_zero_parser
 
-grammar: $(SRC_DIR)/grammar.c $(INCLUDE_DIR)/grammar.h
-	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/grammar.c -o $(OBJ_DIR)/grammar.o
+all: $(GRAMMAR_OBJ) $(LIST_OBJ) $(MAIN_OBJ) $(PARSER_BIN)
 
-list: $(SRC_DIR)/list.c $(INCLUDE_DIR)/list.h
-	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/list.c -o $(OBJ_DIR)/list.o
+$(GRAMMAR_OBJ): $(SRC_DIR)/grammar.c $(INCLUDE_DIR)/grammar.h
+	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/grammar.c -o $(GRAMMAR_OBJ)
 
-main: $(SRC_DIR)/main.c
-	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/main.c -o $(OBJ_DIR)/main.o
+$(LIST_OBJ): $(SRC_DIR)/list.c $(INCLUDE_DIR)/list.h
+	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/list.c -o $(LIST_OBJ)
 
-link: $(OBJ_DIR)/grammar.o $(OBJ_DIR)/list.o $(OBJ_DIR)/main.o
-	gcc $(OBJ_DIR)/grammar.o $(OBJ_DIR)/list.o $(OBJ_DIR)/main.o -o $(BIN_DIR)/lr_zero_parser
+$(MAIN_OBJ): $(SRC_DIR)/main.c
+	gcc -c -I$(INCLUDE_DIR) $(SRC_DIR)/main.c -o $(MAIN_OBJ)
 
-	
+$(PARSER_BIN): $(GRAMMAR_OBJ) $(LIST_OBJ) $(MAIN_OBJ)
+	gcc $(GRAMMAR_OBJ) $(LIST_OBJ) $(MAIN_OBJ) -o $(PARSER_BIN)
+
+clean: 
+	rm $(OBJ_DIR)/* $(BIN_DIR)/*
